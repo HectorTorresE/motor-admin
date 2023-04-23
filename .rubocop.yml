@@ -1,0 +1,93 @@
+require:
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - node_modules/**/*
+    - ui/node_modules/**/*
+    - bin/*
+    - vendor/**/*
+    - lib/generators/motor/templates/**/*
+    - lib/motor/active_record_utils/active_record_filter.rb
+    - motor-admin.gemspec
+    - spec/dummy/db/schema.rb
+  TargetRubyVersion: '2.6'
+
+Metrics/BlockLength:
+  Exclude:
+    - Rakefile
+    - '**/*.rake'
+    - spec/**/*
+    - config/routes.rb
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Metrics/AbcSize:
+  Max: 22
+
+Naming/FileName:
+  Enabled: false
+
+Naming/MethodParameterName:
+  MinNameLength: 2
+
+Metrics/ModuleLength:
+  Max: 300
+
+Metrics/ClassLength:
+  Max: 300
+
+Style/ClassEqualityComparison:
+  Enabled: false
+
+Style/FetchEnvVar:
+  Enabled: false
+
+Rails/Date:
+  Enabled: false
+
+Rails/SquishedSQLHeredocs:
+  Enabled: false
+
+Rails/SkipsModelValidations:
+  Enabled: false
+
+Rails/Output:
+  Enabled: false
+
+Rails/LexicallyScopedActionFilter:
+  Enabled: false
+
+Rails/ActiveSupportOnLoad:
+  Enabled: false
+
+Rails/ApplicationRecord:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 30
+
+RSpec/MultipleExpectations:
+  Max: 10
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/Capybara/VisibilityMatcher:
+  Enabled: false
+
+Metrics/ParameterLists:
+  Max: 7

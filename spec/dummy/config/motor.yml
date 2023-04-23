@@ -1,0 +1,950 @@
+---
+engine_version: 0.2.41
+file_version: 2021-12-28 13:18:19.248451000 Z
+resources:
+- name: country
+  preferences:
+    tabs:
+    - tab_type: query
+      preferences:
+        query_id: 17
+      name: details
+    columns:
+    - name: customer_id
+      display_name: Customer
+      column_type: reference
+      access_type: read_only
+      reference:
+        name: customer
+        display_name: Customer
+        model_name: customer
+        reference_type: belongs_to
+        foreign_key: customer_id
+        primary_key: id
+        options: {}
+        polymorphic: false
+        virtual: true
+      virtual: false
+      format: {}
+    associations:
+    - name: customers
+      display_name: Customers
+      model_name: customer
+      icon: user-check
+      foreign_key: country_code
+      primary_key: code
+      virtual: true
+      polymorphic: false
+      slug: customers
+    - name: orders
+      display_name: Orders
+      model_name: order
+      foreign_key: customer_id
+      primary_key: id
+      options:
+        through: customers
+        source: orders
+      virtual: true
+      polymorphic: false
+      slug: orders
+    custom_sql: |-
+      SELECT co.*, count(cs.id) as customers_count FROM countries as co
+      JOIN customers as cs ON cs.country_code = co.code
+      GROUP BY co.id
+  updated_at: 2021-12-04 10:25:38.021847000 +00:00
+- name: customer
+  preferences:
+    columns:
+    - display_name: Country
+      name: country_code
+    - display_name: Type
+      name: kind
+    - name: sales_per_year
+      display_name: Sales per year
+      column_type: chart
+      access_type: read_only
+      default_value: ''
+      virtual: true
+      format: {}
+    - name: monthly_sales_diff
+      display_name: Monthly sales diff
+      column_type: change
+      access_type: read_only
+      default_value: ''
+      virtual: true
+      format: {}
+    - column_type: percentage
+      default_value: ''
+      name: reputation
+    - name: lifetime_value
+      display_name: Lifetime value
+      column_type: currency
+      access_type: read_only
+      virtual: false
+      format:
+        currency: USD
+        currency_base: cents
+    scopes:
+    - display_name: VIP
+      name: vip
+    tabs:
+    - name: sales
+      display_name: Sales
+      tab_type: dashboard
+      preferences:
+        dashboard_id: 2
+    custom_sql: |-
+      SELECT cs.*, sum(li.quantity * li.unit_price) as lifetime_value FROM customers as cs
+      LEFT JOIN orders as od ON od.customer_id = cs.id
+      LEFT JOIN line_items as li ON od.id = li.order_id
+      GROUP BY cs.id
+  updated_at: 2021-07-15 17:23:20.368063000 +00:00
+- name: line_item
+  preferences:
+    columns:
+    - column_type: currency
+      default_value: ''
+      format:
+        currency: USD
+        currency_base: cents
+      name: unit_price
+    visible: false
+  updated_at: 2021-12-04 10:25:38.023578000 +00:00
+- name: note
+  preferences:
+    actions:
+    - action_type: form
+      preferences:
+        form_id: 4
+      name: create
+  updated_at: 2021-12-04 10:25:38.024820000 +00:00
+- name: order
+  preferences:
+    actions:
+    - name: mark_as_shipped
+      display_name: Mark as Shipped
+      action_type: method
+      preferences:
+        method_name: ship!
+    - name: cancel
+      display_name: Cancel
+      action_type: form
+      preferences:
+        form_id: 1
+    - action_type: form
+      preferences:
+        form_id: 2
+      name: create
+    columns:
+    - name: total_price
+      display_name: Total price
+      column_type: currency
+      access_type: read_only
+      virtual: true
+      format:
+        currency: USD
+        currency_base: cents
+    - name: map_link
+      display_name: Map link
+      column_type: link
+      access_type: read_write
+      default_value: ''
+      virtual: true
+      format:
+        link_text: "\U0001F4CD Map"
+  updated_at: 2021-12-04 10:25:38.026092000 +00:00
+- name: order_note
+  preferences:
+    display_name: Notes
+  updated_at: 2021-12-04 10:25:38.027365000 +00:00
+- name: product
+  preferences:
+    columns:
+    - column_type: currency
+      default_value: ''
+      format:
+        currency: USD
+        currency_base: cents
+      name: price
+    - access_type: hidden
+      name: slug
+    - column_type: richtext
+      default_value: ''
+      name: description
+    associations:
+    - visible: false
+      name: line_items
+  updated_at: 2021-12-04 10:25:38.028556000 +00:00
+- name: user
+  preferences:
+    columns:
+    - column_type: tag
+      default_value: ''
+      name: groups
+    - name: customer
+      display_name: Customer
+      column_type: reference
+      access_type: read_only
+      default_value: ''
+      reference:
+        name: customer
+        display_name: Customer
+        model_name: customer
+        reference_type: has_one
+        foreign_key: email
+        association_primary_key: email
+        options: {}
+        polymorphic: false
+        virtual: true
+        primary_key: email
+      virtual: true
+      format: {}
+  updated_at: 2021-12-04 10:25:38.029892000 +00:00
+configs:
+- key: header.links
+  value:
+  - name: Sales Dashboard
+    path: "/dashboards/1"
+  updated_at: 2021-05-20 22:03:27.130000000 +00:00
+- key: resources.active_storage/attachment.columns.order
+  value:
+  - id
+  - path
+  - record_id
+  - record_type
+  - name
+  - file
+  - created_at
+  updated_at: 2021-05-20 12:28:27.887703000 +00:00
+- key: resources.country.columns.order
+  value:
+  - id
+  - name
+  - code
+  - customers_count
+  - updated_at
+  - created_at
+  updated_at: 2021-07-15 09:43:36.040697000 +00:00
+- key: resources.customer.associations.order
+  value:
+  - orders
+  - line_items
+  - notes
+  updated_at: 2021-05-21 17:59:03.557865000 +00:00
+- key: resources.customer.columns.order
+  value:
+  - id
+  - country_code
+  - name
+  - email
+  - lifetime_value
+  - kind
+  - sales_per_year
+  - monthly_sales_diff
+  - reputation
+  - email_subscriber
+  - bio
+  - updated_at
+  - created_at
+  updated_at: 2021-07-15 17:23:43.174013000 +00:00
+- key: resources.customer.scopes.order
+  value:
+  - vip
+  - standard
+  updated_at: 2021-05-20 13:46:36.180216000 +00:00
+- key: resources.customer.tabs.order
+  value:
+  - details
+  - sales
+  updated_at: 2021-05-21 17:58:38.821263000 +00:00
+- key: resources.order
+  value:
+  - product
+  - customer
+  - order
+  - country
+  - active_storage/attachment
+  - order_note
+  - line_item
+  updated_at: 2021-05-21 20:15:21.231446000 +00:00
+- key: resources.order.actions.order
+  value:
+  - create
+  - edit
+  - remove
+  - mark_as_shipped
+  - cancel
+  updated_at: 2021-05-20 13:33:38.049831000 +00:00
+- key: resources.order.columns.order
+  value:
+  - id
+  - customer_id
+  - total_price
+  - address_line_one
+  - address_line_two
+  - address_city
+  - address_state
+  - address_zip
+  - status
+  - map_link
+  - shipped_at
+  - updated_at
+  - created_at
+  updated_at: 2021-07-03 10:30:22.826480000 +00:00
+- key: resources.order.scopes.order
+  value:
+  - pending
+  - shipped
+  - delivered
+  - canceled
+  updated_at: 2021-05-20 13:46:51.179106000 +00:00
+- key: resources.product.associations.order
+  value:
+  - orders
+  - line_items
+  - customers
+  updated_at: 2021-05-20 12:57:27.650784000 +00:00
+queries:
+- id: 1
+  name: Product category per country
+  sql_body: "SELECT co.name, \nsum(li.quantity) FILTER (WHERE pd.category = 'fanfiction')
+    as \"Fanfiction\",\nsum(li.quantity) FILTER (WHERE pd.category = 'humor') as \"Humor\",\nsum(li.quantity)
+    FILTER (WHERE pd.category = 'mythology') as \"Mythology\",\nsum(li.quantity) FILTER
+    (WHERE pd.category = 'fantasy') as \"Fantasy\"\nFROM orders as od \nJOIN line_items
+    as li ON li.order_id = od.id\nJOIN products as pd ON pd.id = li.product_id\nJOIN
+    customers as cs ON cs.id = od.customer_id\nJOIN countries as co ON co.code = cs.country_code\nGROUP
+    BY 1 ORDER BY 1;"
+  description:
+  preferences:
+    visualization: bar_chart
+    visualization_options:
+      label_format: decimal
+      label_format_options: {}
+      chart_stacked: true
+    variables: []
+  tags:
+  - Stats
+  updated_at: 2021-05-20 12:54:46.929124000 +00:00
+- id: 2
+  name: Orders per country
+  sql_body: |-
+    SELECT co.name, count(1)
+    FROM orders as od
+    JOIN customers as cs ON cs.id = od.customer_id
+    JOIN countries as co ON co.code = cs.country_code
+    GROUP BY 1 ORDER BY 2 DESC;
+  description:
+  preferences:
+    visualization: row_chart
+    visualization_options:
+      label_format: decimal
+      label_format_options: {}
+      chart_stacked: false
+    variables: []
+  tags:
+  - Stats
+  updated_at: 2021-05-20 19:48:27.970778000 +00:00
+- id: 3
+  name: Total sales per month
+  sql_body: "WITH \ndates AS (\n  SELECT date_trunc('month', date) as date FROM generate_series(now()
+    - '1 year'::interval, now(), '1 month'::interval) as date\n),\nvalues AS (\n  SELECT
+    \n  date_trunc('month', od.created_at) as date,\n  sum(li.unit_price * li.quantity)
+    / 100 as total\n  FROM orders as od\n  JOIN line_items as li ON li.order_id =
+    od.id\n  WHERE od.status != 'canceled'\n  GROUP BY 1\n)\nSELECT dd.date, coalesce(vl.total,
+    0) as total \nFROM dates as dd LEFT JOIN values as vl ON vl.date = dd.date;"
+  description:
+  preferences:
+    visualization: line_chart
+    visualization_options:
+      label_format: currency
+      label_format_options:
+        currency: USD
+    variables: []
+  tags:
+  - Stats
+  updated_at: 2021-05-20 17:52:03.026180000 +00:00
+- id: 4
+  name: 'Customer total sales per month '
+  sql_body: "WITH \ndates AS (\n  SELECT date_trunc('month', date) as date FROM generate_series(now()
+    - '1 year'::interval, now(), '1 month'::interval) as date\n),\nvalues AS (\n  SELECT
+    \n  date_trunc('month', od.created_at) as date,\n  sum(li.unit_price * li.quantity)
+    / 100 as total\n  FROM orders as od\n  JOIN line_items as li ON li.order_id =
+    od.id\n  WHERE od.status != 'canceled'\n  AND od.customer_id = {{ customer_id
+    }}\n  GROUP BY 1\n)\nSELECT dd.date, coalesce(vl.total, 0) as total FROM dates
+    as dd LEFT JOIN values as vl ON vl.date = dd.date;"
+  description:
+  preferences:
+    visualization: bar_chart
+    visualization_options:
+      label_format: currency
+      label_format_options:
+        currency: USD
+    variables:
+    - name: customer_id
+      display_name: Customer
+      variable_type: reference
+      reference_resource: customer
+  tags:
+  - Customers
+  updated_at: 2021-05-20 17:51:50.379192000 +00:00
+- id: 5
+  name: Total sales
+  sql_body: |-
+    SELECT (sum(li.unit_price * li.quantity)::integer::money / 100)
+    FROM orders as od
+    JOIN line_items as li ON li.order_id = od.id
+    WHERE od.status != 'canceled'
+  description:
+  preferences:
+    visualization: value
+    visualization_options:
+      label_format: decimal
+      label_format_options: {}
+    variables: []
+  tags:
+  - Stats
+  updated_at: 2021-05-20 19:02:17.847343000 +00:00
+- id: 6
+  name: Current month sales
+  sql_body: "WITH \nprev_period AS (\n  SELECT (sum(li.unit_price * li.quantity)::integer::money
+    / 100) as total\n  FROM orders as od\n  JOIN line_items as li ON li.order_id =
+    od.id\n  WHERE od.status != 'canceled'\n  AND od.created_at > date_trunc('month',
+    now() - '1 month'::interval) \n  AND od.created_at < date_trunc('month', now())\n),\ncurrent_period
+    AS (\n  SELECT (sum(li.unit_price * li.quantity)::integer::money / 100) as total\n
+    \ FROM orders as od\n  JOIN line_items as li ON li.order_id = od.id\n  WHERE od.status
+    != 'canceled'\n  AND od.created_at > date_trunc('month', now())\n)\nSELECT *,
+    (SELECT current_period.total - prev_period.total FROM prev_period) FROM current_period;"
+  description:
+  preferences:
+    visualization: value
+    visualization_options:
+      label_format: decimal
+      label_format_options: {}
+    variables: []
+  tags:
+  - Stats
+  updated_at: 2021-05-20 19:07:18.510477000 +00:00
+- id: 7
+  name: Orders processing funnel
+  sql_body: |-
+    (SELECT 'All', count(1) as total FROM orders as od WHERE od.status != 'canceled')
+    UNION ALL
+    (SELECT 'Shipped', count(1) as total FROM orders as od WHERE od.status IN ('delivered', 'shipped'))
+    UNION ALL
+    (SELECT 'Delivered', count(1) as total FROM orders as od WHERE od.status IN ('delivered'))
+  description:
+  preferences:
+    visualization: funnel
+    visualization_options:
+      label_format: decimal
+      label_format_options: {}
+    variables: []
+  tags:
+  - Stats
+  updated_at: 2021-05-20 19:19:54.517758000 +00:00
+- id: 8
+  name: Best performance result
+  sql_body: "WITH \ntop_product AS (\n  SELECT \n  pd.id as top_product_id, \n  pd.name
+    as top_product_name, \n  sum(li.quantity) as top_product_total\n  FROM products
+    as pd\n  JOIN line_items as li ON li.product_id = pd.id\n  GROUP BY pd.id ORDER
+    BY top_product_total DESC LIMIT 1\n),\ntop_customer AS (\n  SELECT \n  cs.id as
+    top_customer_id, \n  cs.name as top_customer_name, \n  cs.email as top_customer_email,
+    \n  (sum(li.quantity * li.unit_price) / 100)::numeric::money as top_customer_cash\n
+    \ FROM customers as cs \n  JOIN orders as od ON od.customer_id = cs.id\n  JOIN
+    line_items as li ON li.order_id = od.id\n  GROUP BY cs.id ORDER BY top_customer_cash
+    DESC LIMIT 1\n)\nSELECT * FROM top_customer CROSS JOIN top_product"
+  description:
+  preferences:
+    visualization: markdown
+    visualization_options:
+      label_format: decimal
+      label_format_options: {}
+      markdown: "### Top customer\n\n[{{top_customer_name}}](/data/customers/{{top_customer_id}})
+        - **{{top_customer_cash}}** lifetime value \n\n### Best selling product\n\n[{{top_product_name}}](/data/products/{{top_product_id}})
+        - ordered **{{top_product_total}}** times"
+    variables: []
+  tags:
+  - Stats
+  updated_at: 2021-05-23 09:35:35.569000000 +00:00
+- id: 9
+  name: Customer types
+  sql_body: |-
+    SELECT cs.kind, count(1)
+    FROM customers as cs
+    GROUP BY 1;
+  description:
+  preferences:
+    visualization: pie_chart
+    visualization_options:
+      label_format: decimal
+      label_format_options: {}
+    variables: []
+  tags:
+  - Stats
+  updated_at: 2021-05-20 20:07:05.429191000 +00:00
+- id: 10
+  name: Customer lifetime value
+  sql_body: "SELECT sum(unit_price::numeric::money * quantity) / 100 as total\nFROM
+    orders as od \nJOIN line_items as li ON li.order_id = od.id\nWHERE od.status !=
+    'canceled'\nAND od.customer_id = {{customer_id}}"
+  description:
+  preferences:
+    visualization: value
+    visualization_options:
+      label_format: decimal
+      label_format_options: {}
+    variables:
+    - name: customer_id
+      display_name: Customer
+      variable_type: reference
+      reference_resource: customer
+  tags:
+  - Customers
+  updated_at: 2021-05-21 17:45:28.272000000 +00:00
+- id: 11
+  name: Popular customer product categories
+  sql_body: "SELECT initcap(pr.category), count(1) \nFROM orders as od\nJOIN line_items
+    as li ON li.order_id = od.id\nJOIN products as pr ON pr.id = li.product_id\nWHERE
+    od.status != 'canceled'\nAND od.customer_id = {{customer_id}}\nGROUP BY 1 ORDER
+    BY 2 DESC"
+  description:
+  preferences:
+    visualization: row_chart
+    visualization_options:
+      label_format: decimal
+      label_format_options: {}
+      chart_values_axis: false
+    variables:
+    - name: customer_id
+      display_name: Customer
+      variable_type: reference
+      reference_resource: customer
+  tags:
+  - Customers
+  updated_at: 2021-05-21 20:23:48.488000000 +00:00
+- id: 12
+  name: New customers
+  sql_body: "SELECT * FROM customers \nWHERE created_at > now() - '3 months'::interval"
+  description:
+  preferences:
+    visualization: table
+    visualization_options: {}
+    variables: []
+  tags:
+  - Customers
+  updated_at: 2021-05-21 18:03:23.444000000 +00:00
+- id: 13
+  name: USA states
+  sql_body: "SELECT * FROM \n(\nSELECT 'Alaska','AK','West','Pacific'\nUNION SELECT
+    'Alabama','AL','South','East South Central'\nUNION SELECT 'Arkansas','AR','South','West
+    South Central'\nUNION SELECT 'Arizona','AZ','West','Mountain'\nUNION SELECT 'California','CA','West','Pacific'\nUNION
+    SELECT 'Colorado','CO','West','Mountain'\nUNION SELECT 'Connecticut','CT','Northeast','New
+    England'\nUNION SELECT 'District of Columbia','DC','South','South Atlantic'\nUNION
+    SELECT 'Delaware','DE','South','South Atlantic'\nUNION SELECT 'Florida','FL','South','South
+    Atlantic'\nUNION SELECT 'Georgia','GA','South','South Atlantic'\nUNION SELECT
+    'Hawaii','HI','West','Pacific'\nUNION SELECT 'Iowa','IA','Midwest','West North
+    Central'\nUNION SELECT 'Idaho','ID','West','Mountain'\nUNION SELECT 'Illinois','IL','Midwest','East
+    North Central'\nUNION SELECT 'Indiana','IN','Midwest','East North Central'\nUNION
+    SELECT 'Kansas','KS','Midwest','West North Central'\nUNION SELECT 'Kentucky','KY','South','East
+    South Central'\nUNION SELECT 'Louisiana','LA','South','West South Central'\nUNION
+    SELECT 'Massachusetts','MA','Northeast','New England'\nUNION SELECT 'Maryland','MD','South','South
+    Atlantic'\nUNION SELECT 'Maine','ME','Northeast','New England'\nUNION SELECT 'Michigan','MI','Midwest','East
+    North Central'\nUNION SELECT 'Minnesota','MN','Midwest','West North Central'\nUNION
+    SELECT 'Missouri','MO','Midwest','West North Central'\nUNION SELECT 'Mississippi','MS','South','East
+    South Central'\nUNION SELECT 'Montana','MT','West','Mountain'\nUNION SELECT 'North
+    Carolina','NC','South','South Atlantic'\nUNION SELECT 'North Dakota','ND','Midwest','West
+    North Central'\nUNION SELECT 'Nebraska','NE','Midwest','West North Central'\nUNION
+    SELECT 'New Hampshire','NH','Northeast','New England'\nUNION SELECT 'New Jersey','NJ','Northeast','Middle
+    Atlantic'\nUNION SELECT 'New Mexico','NM','West','Mountain'\nUNION SELECT 'Nevada','NV','West','Mountain'\nUNION
+    SELECT 'New York','NY','Northeast','Middle Atlantic'\nUNION SELECT 'Ohio','OH','Midwest','East
+    North Central'\nUNION SELECT 'Oklahoma','OK','South','West South Central'\nUNION
+    SELECT 'Oregon','OR','West','Pacific'\nUNION SELECT 'Pennsylvania','PA','Northeast','Middle
+    Atlantic'\nUNION SELECT 'Rhode Island','RI','Northeast','New England'\nUNION SELECT
+    'South Carolina','SC','South','South Atlantic'\nUNION SELECT 'South Dakota','SD','Midwest','West
+    North Central'\nUNION SELECT 'Tennessee','TN','South','East South Central'\nUNION
+    SELECT 'Texas','TX','South','West South Central'\nUNION SELECT 'Utah','UT','West','Mountain'\nUNION
+    SELECT 'Virginia','VA','South','South Atlantic'\nUNION SELECT 'Vermont','VT','Northeast','New
+    England'\nUNION SELECT 'Washington','WA','West','Pacific'\nUNION SELECT 'Wisconsin','WI','Midwest','East
+    North Central'\nUNION SELECT 'West Virginia','WV','South','South Atlantic'\nUNION
+    SELECT 'Wyoming','WY','West','Mountain'\n) as t(label, value, region, division)\n{{#region}}
+    WHERE t.region IN({{region}}) {{/region}};"
+  description:
+  preferences:
+    visualization: table
+    visualization_options: {}
+    variables:
+    - name: region
+      display_name: Region
+      variable_type: select
+      default_value: ''
+      select_options:
+      - West
+      - South
+      - Northeast
+      - Midwest
+  tags:
+  - Selector
+  updated_at: 2021-06-21 16:59:23.674590000 +00:00
+- id: 14
+  name: USA regions
+  sql_body: |-
+    SELECT 'West' as value
+    UNION SELECT 'South'
+    UNION SELECT 'Northeast'
+    UNION SELECT 'Midwest'
+  description:
+  preferences:
+    visualization: table
+    visualization_options: {}
+    variables: []
+  tags:
+  - Selector
+  updated_at: 2021-06-21 16:57:11.919080000 +00:00
+- id: 15
+  name: Countries for select
+  sql_body: SELECT code, name FROM countries;
+  description:
+  preferences:
+    visualization: table
+    visualization_options: {}
+    variables: []
+  tags:
+  - Selector
+  updated_at: 2021-06-20 17:38:38.754267000 +00:00
+- id: 16
+  name: Searchable line item selector query
+  sql_body: "WITH items AS (\nSELECT li.id as value, CONCAT(pr.name, ' - ', '$', (li.quantity
+    * li.unit_price / 100)) as label\nFROM line_items as li\nJOIN products as pr ON
+    pr.id = li.product_id\n)\nSELECT * FROM items \n{{#search}} WHERE lower(label)
+    LIKE lower(concat(cast({{search}} as CHAR), '%')) {{/search}}"
+  description:
+  preferences:
+    visualization: table
+    visualization_options: {}
+    variables:
+    - name: search
+      display_name: Search
+      variable_type: text
+  tags:
+  - Selector
+  updated_at: 2021-06-21 17:35:00.990272000 +00:00
+- id: 17
+  name: Country details
+  sql_body: "SELECT co.*, count(cs.id) as customers_count \nFROM countries as co\nJOIN
+    customers as cs ON co.code = cs.country_code\nWHERE co.id = {{country_id}}\nGROUP
+    BY co.id"
+  description:
+  preferences:
+    visualization: markdown
+    visualization_options:
+      label_format: decimal
+      label_format_options: {}
+      markdown: |-
+        ## Country #{{id}}
+
+        __Name__:<br>
+        {{name}}
+
+        __Code__:<br>
+        <a href="/data/customers?filter%5B0%5D%5Bterritory%5D%5Bcode%5D%5Beq%5D={{code}}">{{code}}</a>
+
+        __Total customers__:<br>
+        {{customers_count}}
+
+        <a href="https://www.google.com/maps/?q={{name}}" class="ivu ivu-btn"><i class="ion ion-md-map"></i> Google Maps</a>
+    variables:
+    - name: country_id
+      display_name: Country
+      variable_type: reference
+      reference_resource: country
+  tags:
+  - Details
+  updated_at: 2021-07-14 07:25:20.791589000 +00:00
+- id: 18
+  name: API query
+  sql_body: ''
+  description:
+  preferences:
+    query_type: api
+    visualization: table
+    visualization_options: {}
+    variables: []
+    api_path: "/api/data/customers?q=ver"
+  tags: []
+  updated_at: 2021-12-05 16:40:32.023810000 +00:00
+dashboards:
+- id: 1
+  title: Sales dashboard
+  description:
+  preferences:
+    layout:
+    - title: Current month sales
+      query_id: 6
+      size: 2x1
+    - title: Total sales
+      query_id: 5
+      size: 2x1
+    - title: Top performance result
+      query_id: 8
+      size: 2x1
+    - title: Total sales per month
+      query_id: 3
+      size: 6x2
+    - title: Product category per country
+      query_id: 1
+      size: 3x2
+    - title: Orders per country
+      query_id: 2
+      size: 3x2
+    - title: Orders processing funnel
+      query_id: 7
+      size: 3x2
+    - title: Customer types
+      query_id: 9
+      size: 3x2
+    variables: []
+  tags:
+  - Stats
+  updated_at: 2021-05-23 09:34:56.817000000 +00:00
+- id: 2
+  title: Customer summary
+  description:
+  preferences:
+    layout:
+    - title: Lifetime value
+      query_id: 10
+      size: 3x1
+    - title: Popular categories
+      query_id: 11
+      size: 3x1
+    - title: Total sales per month
+      query_id: 4
+      size: 6x2
+    variables: []
+  tags:
+  - Customers
+  updated_at: 2021-05-21 17:54:44.358000000 +00:00
+forms:
+- id: 1
+  name: Cancel order
+  http_method: POST
+  api_path: "/orders/{order_id}/cancel"
+  description:
+  preferences:
+    fields:
+    - display_name: Order
+      name: order_id
+      field_type: reference
+      default_value: ''
+      validators: []
+      reference:
+        model_name: order
+    - display_name: Reason
+      name: reason
+      field_type: textarea
+      default_value: ''
+      validators: []
+  api_config_name: origin
+  tags:
+  - Orders
+  updated_at: 2021-05-20 13:23:05.149555000 +00:00
+- id: 2
+  name: New order form
+  http_method: POST
+  api_path: "/orders"
+  description:
+  preferences:
+    fields:
+    - display_name: Address line one
+      name: address_line_one
+      field_type: input
+      default_value: ''
+      validators:
+      - required: true
+    - display_name: Address line two
+      name: address_line_two
+      field_type: input
+      default_value: ''
+      validators:
+      - required: true
+    - display_name: Region
+      name: region
+      field_type: select
+      default_value: ''
+      validators: []
+      select_query_id: 14
+    - display_name: Address state
+      name: address_state
+      field_type: select
+      default_value: ''
+      validators:
+      - required: true
+      select_query_id: 13
+      conditions:
+      - field: region
+        action: nempty
+        value: ''
+    - display_name: Address city
+      name: address_city
+      field_type: input
+      default_value: ''
+      validators:
+      - required: true
+    - display_name: Address ZIP
+      name: address_zip
+      field_type: input
+      default_value: ''
+      validators:
+      - required: true
+    - display_name: Customer
+      name: customer
+      items:
+      - display_name: Email
+        name: email
+        field_type: input
+        default_value: ''
+        validators:
+        - required: true
+      - display_name: Name
+        name: name
+        field_type: input
+        default_value: ''
+        validators:
+        - required: true
+      - display_name: Country
+        name: country_code
+        field_type: select
+        default_value: ''
+        validators:
+        - required: true
+        select_query_id: 15
+    - display_name: Line items
+      name: line_items
+      items:
+      - display_name: Product
+        name: product_id
+        field_type: reference
+        default_value: ''
+        validators:
+        - required: true
+        reference:
+          model_name: product
+      - display_name: Price
+        name: unit_price
+        field_type: number
+        default_value: ''
+        validators:
+        - required: true
+      - display_name: Quantity
+        name: quantity
+        field_type: number
+        default_value: ''
+        validators:
+        - required: true
+      is_array: true
+    - display_name: Notes
+      name: notes
+      items:
+      - display_name: Body
+        name: body
+        field_type: textarea
+        default_value: ''
+        validators:
+        - required: true
+        is_array: false
+      is_array: true
+    - display_name: Tags
+      name: tags
+      field_type: input
+      default_value: []
+      validators: []
+      is_array: true
+  api_config_name: origin
+  tags:
+  - Orders
+  updated_at: 2021-07-13 11:15:14.374208000 +00:00
+- id: 3
+  name: Update order line items
+  http_method: PUT
+  api_path: "/orders/{order_id}"
+  description:
+  preferences:
+    fields:
+    - display_name: Order
+      name: order_id
+      field_type: reference
+      default_value: 23
+      validators:
+      - required: true
+      reference:
+        model_name: order
+    - display_name: Line items
+      name: line_item_ids
+      field_type: select
+      default_value: ''
+      validators: []
+      is_array: true
+      select_query_id: 16
+    default_values_api_path: "/orders/{order_id}"
+  api_config_name: origin
+  tags:
+  - Orders
+  updated_at: 2021-06-21 13:29:50.410041000 +00:00
+- id: 4
+  name: Create Notes
+  http_method: POST
+  api_path: "/notes"
+  description:
+  preferences:
+    fields:
+    - name: record_id
+      display_name: Record
+      default_value:
+      field_type: number
+      validators:
+      - required: true
+      reference:
+        model_name:
+    - name: record_type
+      display_name: Record type
+      default_value:
+      field_type: input
+      is_array: false
+      validators:
+      - required: true
+    - name: body
+      display_name: Body
+      default_value:
+      field_type: input
+      is_array: false
+      validators:
+      - required: true
+    - display_name: Images
+      name: images
+      field_type: file
+      default_value: []
+      validators: []
+      is_array: true
+  api_config_name: origin
+  tags: []
+  updated_at: 2021-07-08 06:14:54.311735000 +00:00
+alerts:
+- id: 1
+  name: New customers email
+  query_id: 12
+  to_emails: admin@example.com
+  is_enabled: true
+  description: ''
+  preferences:
+    timezone: Central Time (US & Canada)
+    interval: every Monday at 8 PM
+  tags:
+  - Customers
+  updated_at: 2021-05-21 18:05:05.637000000 +00:00
+api_configs:
+- id: 1
+  name: origin
+  url: /
+  preferences: {}
+  description:
+  updated_at: 2021-12-28 13:18:19.248451000 +00:00

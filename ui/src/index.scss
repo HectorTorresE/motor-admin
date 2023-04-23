@@ -1,0 +1,255 @@
+@import 'utils/styles/variables';
+
+@import 'view3/src/styles/custom';
+@import 'view3/src/styles/mixins/index';
+@import 'view3/src/styles/common/base';
+@import 'view3/src/styles/common/icons';
+@import 'view3/src/styles/animation/index';
+
+@import 'view3/src/styles/components/button';
+@import 'view3/src/styles/components/dropdown';
+@import 'view3/src/styles/components/select';
+@import 'view3/src/styles/components/select-dropdown';
+@import 'view3/src/styles/components/modal';
+@import 'view3/src/styles/components/menu';
+@import 'view3/src/styles/components/card';
+@import 'view3/src/styles/components/input';
+@import 'view3/src/styles/components/form';
+@import 'view3/src/styles/components/spin';
+@import 'view3/src/styles/components/message';
+@import 'view3/src/styles/components/checkbox';
+@import 'view3/src/styles/components/radio';
+@import 'view3/src/styles/components/poptip';
+@import 'view3/src/styles/components/tag';
+@import 'view3/src/styles/components/drawer';
+@import 'view3/src/styles/components/layout';
+@import 'view3/src/styles/components/breadcrumb';
+@import 'view3/src/styles/components/table';
+@import 'view3/src/styles/components/page';
+@import 'view3/src/styles/components/input-number';
+@import 'view3/src/styles/components/split';
+@import 'view3/src/styles/components/tabs';
+@import 'view3/src/styles/components/badge';
+@import 'view3/src/styles/components/alert';
+@import 'view3/src/styles/components/date-picker';
+@import 'view3/src/styles/components/time-picker';
+@import 'view3/src/styles/components/collapse';
+@import 'view3/src/styles/components/progress';
+@import 'view3/src/styles/components/switch';
+@import 'view3/src/styles/components/color-picker';
+@import 'view3/src/styles/components/rate';
+
+@import 'utils/styles/richtext';
+
+@import 'leaflet/dist/leaflet.css';
+
+.#{$spin-prefix-cls} {
+  &-fix {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+input,
+textarea {
+  background-clip: padding-box;
+}
+
+h1 {
+  @media screen and (max-width: $breakpoint-md) {
+    font-size: 26px;
+  }
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: normal;
+}
+
+h4 {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+h5 {
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.ivu-tag,
+.ivu-tag-text {
+  cursor: pointer;
+}
+
+.drawer-no-bottom-padding {
+  .ivu-drawer-body {
+    padding-bottom: 0;
+  }
+}
+
+.drawer-no-top-padding {
+  .ivu-drawer-body {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .ivu-drawer {
+    width: 100% !important;
+  }
+}
+
+.ivu-btn-small {
+  height: 28px;
+}
+
+.text-break-all {
+  word-break: break-all;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.pre-wrap {
+  white-space: pre-wrap;
+}
+
+.ivu-form-item-error-tip {
+  padding: 0;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-move {
+  cursor: move;
+}
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-text {
+  cursor: text;
+}
+
+.cursor-default {
+  cursor: default;
+}
+
+.cursor-unset {
+  cursor: unset;
+}
+
+.cursor-zoom-in {
+  cursor: zoom-in;
+}
+
+*[contenteditable]:focus {
+  outline-color: transparent;
+  outline-style: none;
+}
+
+.ivu-tag .ion-ios-close {
+  font-size: 16px !important;
+}
+
+.sticky-footer {
+  background: #fff;
+  border-top: 1px solid #e8e8e8;
+  bottom: 0;
+  left: 0;
+  padding: 10px 0;
+  position: sticky;
+  text-align: right;
+  width: 100%;
+}
+
+.ivu-modal-body {
+  .sticky-footer {
+    padding: 10px 0 0;
+  }
+}
+
+.ivu-badge-count {
+  box-shadow: none;
+  font-family: inherit;
+  font-weight: bold;
+}
+
+.ivu-tag {
+  .ion {
+    vertical-align: middle;
+  }
+}
+
+@media screen and (max-width: $breakpoint-md) {
+  .ivu-page-options {
+    display: none;
+  }
+
+  .ivu-modal {
+    top: 10px;
+  }
+}
+
+@media screen and (max-width: $breakpoint-md) {
+  .ivu-btn.md-icon-only > span {
+    display: none;
+  }
+}
+
+.modal-size-large {
+  .ivu-modal {
+    top: 10px;
+  }
+
+  @media screen and (min-width: $breakpoint-xl) {
+    .ivu-modal {
+      width: $breakpoint-xl !important;
+    }
+  }
+}
+
+.ivu-layout-sider {
+  overflow-y: hidden !important;
+
+  &:hover {
+    overflow-y: auto !important;
+  }
+}
+
+.ivu-layout-sider::-webkit-scrollbar {
+  border-right: 1px solid #dee2e6;
+  height: 4px;
+  width: 4px;
+  z-index: 12;
+}
+
+.ivu-layout-sider::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  background-color: #d3d3d3;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.ivu-select-item {
+  white-space: pre-line;
+}
+
+.ivu-select {
+  .ivu-tag.ivu-tag-checked {
+    height: 100%;
+
+    .ivu-tag-text {
+      white-space: pre-line !important;
+    }
+  }
+}
