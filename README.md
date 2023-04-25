@@ -1,4 +1,5 @@
 <div align="center">
+![logo](https://user-images.githubusercontent.com/31547587/234342830-7833c066-660e-4fd3-a1da-0224241dcd47.png)
 
 [![Motor Admin Rails](https://user-images.githubusercontent.com/5418788/140520844-a947845d-b579-4b3f-9b49-c539ad3cf580.png)](https://www.getmotoradmin.com/ruby-on-rails)
 
